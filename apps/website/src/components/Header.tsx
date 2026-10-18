@@ -5876,10 +5876,15 @@ interface NavLink {
   href: string;
 }
 
+// const ERP_LOGIN_URL =
+//   process.env.NEXT_PUBLIC_ERP_URL
+//     ? `${process.env.NEXT_PUBLIC_ERP_URL}/login`
+//     : "http://localhost:3001/login";
+
 const ERP_LOGIN_URL =
   process.env.NEXT_PUBLIC_ERP_URL
-    ? `${process.env.NEXT_PUBLIC_ERP_URL}/login`
-    : "http://localhost:3001/login";
+    ? `${process.env.NEXT_PUBLIC_ERP_URL.replace(/\/$/, "")}/login`
+    : "http://localhost:3000/erp/login";
 
 const STAFF_ROLES = new Set([
   "admin",
