@@ -81,27 +81,61 @@
 // export default nextConfig;
 
 
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+//   // The ERP is accessed through the website at /erp.
+//   basePath: "/erp",
+
+//   reactStrictMode: true,
+
+//   images: {
+//     remotePatterns: [
+//       {
+//         protocol: "https",
+//         hostname: "images.unsplash.com",
+//       },
+//       {
+//         protocol: "https",
+//         hostname: "plus.unsplash.com",
+//       },
+//       {
+//         protocol: "https",
+//         hostname: "firebasestorage.googleapis.com",
+//       },
+//     ],
+//   },
+
+//   experimental: {
+//     serverActions: {
+//       bodySizeLimit: "10mb",
+//     },
+//   },
+
+//   webpack: (config) => {
+//     config.resolve.alias = {
+//       ...config.resolve.alias,
+//       "@": ".",
+//     };
+
+//     return config;
+//   },
+// };
+
+// export default nextConfig;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // The ERP is accessed through the website at /erp.
+  // Served under https://yourdomain.com/erp/...
   basePath: "/erp",
 
   reactStrictMode: true,
 
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "plus.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "firebasestorage.googleapis.com",
-      },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "plus.unsplash.com" },
+      { protocol: "https", hostname: "firebasestorage.googleapis.com" },
+      { protocol: "https", hostname: "akrish-collective-erp.firebasestorage.app" },
     ],
   },
 
@@ -109,15 +143,6 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "10mb",
     },
-  },
-
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@": ".",
-    };
-
-    return config;
   },
 };
 
