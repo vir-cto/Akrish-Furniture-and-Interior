@@ -123,11 +123,35 @@
 
 // export default nextConfig;
 
+// /** @type {import('next').NextConfig} */
+// const nextConfig = {
+//   // Served under https://yourdomain.com/erp/...
+//   basePath: "/erp",
+
+//   reactStrictMode: true,
+
+//   images: {
+//     remotePatterns: [
+//       { protocol: "https", hostname: "images.unsplash.com" },
+//       { protocol: "https", hostname: "plus.unsplash.com" },
+//       { protocol: "https", hostname: "firebasestorage.googleapis.com" },
+//       { protocol: "https", hostname: "akrish-collective-erp.firebasestorage.app" },
+//     ],
+//   },
+
+//   experimental: {
+//     serverActions: {
+//       bodySizeLimit: "10mb",
+//     },
+//   },
+// };
+
+// export default nextConfig;
+
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Served under https://yourdomain.com/erp/...
-  basePath: "/erp",
-
+  // basePath removed — ERP is deployed at domain root
   reactStrictMode: true,
 
   images: {
@@ -146,4 +170,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig; 
+export default nextConfig;
