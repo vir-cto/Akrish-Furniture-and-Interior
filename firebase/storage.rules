@@ -1,0 +1,194 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ─────────────────────────────────────────────
+    // Helper functions
+    // ─────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn()
+        && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && request.auth.token.role == "admin";
+    }
+
+    function isManager() {
+      return isSignedIn()
+        && (
+          request.auth.token.role == "admin" ||
+          request.auth.token.role == "manager"
+        );
+    }
+
+    function isStaff() {
+      return isSignedIn()
+        && request.auth.token.role in [
+          "admin",
+          "manager",
+          "designer",
+          "sales",
+          "accounts",
+          "hr",
+          "employee"
+        ];
+    }
+
+    // ─────────────────────────────────────────────
+    // User profile images
+    // /users/{userId}/profile/{fileName}
+    // ─────────────────────────────────────────────
+
+    match /users/{userId}/profile/{fileName} {
+      allow read: if isOwner(userId) || isStaff();
+
+      allow write: if isOwner(userId);
+
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // ─────────────────────────────────────────────
+    // Product images
+    // /products/{productId}/{fileName}
+    // ─────────────────────────────────────────────
+
+    match /products/{productId}/{fileName} {
+      allow read: if true;
+
+      allow write: if isStaff();
+
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ─────────────────────────────────────────────
+    // Catalog images
+    // /catalog/{productId}/{fileName}
+    // ─────────────────────────────────────────────
+
+    match /catalog/{productId}/{fileName} {
+      allow read: if true;
+
+      allow write: if isStaff();
+
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ─────────────────────────────────────────────
+    // Project files / Vault
+    // /projects/{projectId}/files/{fileName}
+    // ─────────────────────────────────────────────
+
+    match /projects/{projectId}/files/{fileName} {
+      allow read: if isStaff();
+
+      allow write: if isStaff();
+
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ─────────────────────────────────────────────
+    // Project design files
+    // ─────────────────────────────────────────────
+
+    match /projects/{projectId}/designs/{fileName} {
+      allow read: if isStaff();
+
+      allow write: if isStaff();
+
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ─────────────────────────────────────────────
+    // Project photos
+    // ─────────────────────────────────────────────
+
+    match /projects/{projectId}/photos/{fileName} {
+      allow read: if isStaff();
+
+      allow write: if isStaff();
+
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ─────────────────────────────────────────────
+    // Contracts
+    // /contracts/{contractId}/{fileName}
+    // ─────────────────────────────────────────────
+
+    match /contracts/{contractId}/{fileName} {
+      allow read: if isStaff();
+
+      allow write: if isStaff();
+
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ─────────────────────────────────────────────
+    // Quotations
+    // /quotations/{quotationId}/{fileName}
+    // ─────────────────────────────────────────────
+
+    match /quotations/{quotationId}/{fileName} {
+      allow read: if isStaff();
+
+      allow write: if isStaff();
+
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ─────────────────────────────────────────────
+    // Invoices
+    // /invoices/{invoiceId}/{fileName}
+    // ─────────────────────────────────────────────
+
+    match /invoices/{invoiceId}/{fileName} {
+      allow read: if isStaff();
+
+      allow write: if isStaff();
+
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ─────────────────────────────────────────────
+    // Customer documents
+    // /customers/{customerId}/{fileName}
+    // ─────────────────────────────────────────────
+
+    match /customers/{customerId}/{fileName} {
+      allow read: if isStaff();
+
+      allow write: if isStaff();
+
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // ─────────────────────────────────────────────
+    // Temporary uploads
+    // /temp/{userId}/{fileName}
+    // ─────────────────────────────────────────────
+
+    match /temp/{userId}/{fileName} {
+      allow read: if isOwner(userId);
+
+      allow write: if isOwner(userId);
+
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // ─────────────────────────────────────────────
+    // Deny everything else
+    // ─────────────────────────────────────────────
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

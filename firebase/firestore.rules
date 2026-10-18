@@ -1,0 +1,231 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.role == "admin";
+    }
+
+    function isManager() {
+      return isSignedIn()
+        && (
+          request.auth.token.role == "admin" ||
+          request.auth.token.role == "manager"
+        );
+    }
+
+    function isStaff() {
+      return isSignedIn()
+        && request.auth.token.role in [
+          "admin",
+          "manager",
+          "designer",
+          "sales",
+          "accounts",
+          "hr",
+          "employee"
+        ];
+    }
+
+    // ── Users ───────────────────────────────────
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isManager();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isManager();
+      allow delete: if isAdmin();
+    }
+
+    // ── Website products (legacy) ───────────────
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    // ── ERP inventory (THIS was missing) ────────
+    match /furniture_products/{productId} {
+      // Catalog + inventory UI
+      allow read: if true;
+
+      // Staff manage products in ERP
+      allow create: if isStaff();
+      allow delete: if isAdmin();
+
+      // Staff: full update
+      // Signed-in customer: only stock/status after order (deductStockForItems)
+      allow update: if isStaff()
+        || (
+          isSignedIn()
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(["stock", "status", "updatedAt"])
+        );
+    }
+
+    match /catalog/{productId} {
+      allow read: if true;
+      allow create, update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    // ── Carts ───────────────────────────────────
+    match /carts/{userId} {
+      allow read, create, update: if isOwner(userId);
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // ── Website orders ──────────────────────────
+    match /orders/{orderId} {
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      allow read: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isStaff());
+
+      allow update: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isStaff());
+
+      allow delete: if isAdmin();
+    }
+
+    // ── ERP orders mirror ───────────────────────
+    match /furniture_orders/{orderId} {
+      allow read: if isStaff() || isSignedIn();
+      // Website createOrder mirrors here
+      allow create: if isSignedIn();
+      allow update: if isStaff() || isSignedIn();
+      allow delete: if isAdmin();
+    }
+
+    match /furniture_enquiries/{id} {
+      allow read: if isStaff();
+      allow create: if true;
+      allow update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /furniture_customers/{id} {
+      allow read, write: if isStaff() || isSignedIn();
+    }
+
+    match /furniture_payments/{id} {
+      allow read, write: if isStaff();
+    }
+
+    match /furniture_stock_movements/{id} {
+      allow read, write: if isStaff();
+    }
+
+    match /furniture_product_activity/{id} {
+      allow read, write: if isStaff();
+    }
+
+    match /enquiries/{enquiryId} {
+      allow read: if isStaff();
+      allow create: if true;
+      allow update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /quotations/{quotationId} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /projects/{projectId} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /contracts/{contractId} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /payments/{paymentId} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    match /employees/{employeeId} {
+      allow read: if isStaff();
+      allow create, update: if isAdmin() || isManager()
+        || (isSignedIn() && request.auth.token.role == "hr");
+      allow delete: if isAdmin();
+    }
+
+    match /attendance/{attendanceId} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin() || isManager();
+    }
+
+    match /projectFiles/{fileId} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin() || isManager();
+    }
+
+    match /notifications/{notificationId} {
+      allow read, update: if isSignedIn()
+        && resource.data.userId == request.auth.uid;
+      allow create: if isStaff();
+      allow delete: if isAdmin();
+    }
+
+    // Must be ABOVE the catch-all
+    match /customer_addresses/{addressId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+    // ── Interior attendance & holidays ─────────
+    match /interior_attendance/{id} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin() || isManager();
+    }
+
+    match /interior_holidays/{id} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin() || isManager();
+    }
+
+    // Keep legacy attendance if still used
+    match /attendance/{attendanceId} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin() || isManager();
+    }
+
+        match /employees/{employeeId} {
+      allow read: if isStaff();
+      allow create, update: if isAdmin() || isManager()
+        || (isSignedIn() && request.auth.token.role == "hr");
+      allow delete: if isAdmin();
+    }
+
+    match /interior_attendance/{id} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin() || isManager();
+    }
+
+    match /interior_holidays/{id} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin() || isManager();
+    }
+
+    match /attendance/{attendanceId} {
+      allow read, create, update: if isStaff();
+      allow delete: if isAdmin() || isManager();
+    }
