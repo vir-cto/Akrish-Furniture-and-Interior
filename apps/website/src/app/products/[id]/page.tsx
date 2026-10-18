@@ -3732,7 +3732,7 @@ interface Product {
 }
 
 /** Parse "7", "7 days", "5-7 days" → number of days (uses highest number). */
-export function parseLeadTimeDays(value: unknown, fallback = 7): number {
+function parseLeadTimeDays(value: unknown, fallback = 7): number {
   if (typeof value === "number" && Number.isFinite(value) && value > 0) {
     return Math.min(365, Math.floor(value));
   }
