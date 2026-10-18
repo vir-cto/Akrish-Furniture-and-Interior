@@ -1,29 +1,15 @@
-
 {
   "name": "collective-erp",
   "version": "1.0.0",
   "private": true,
-  "description": "Akrish Furniture and Interior ERP monorepo",
   "workspaces": [
-    "apps/*",
-    "functions"
+    "apps/*"
   ],
   "scripts": {
-    "dev": "npm run dev:all",
-    "dev:website": "npm --workspace website run dev -- --port 3000",
-    "dev:erp": "npm --workspace erp run dev -- --port 3001",
-    "dev:all": "concurrently \"npm run dev:website\" \"npm run dev:erp\"",
-    "build": "npm run build:erp && npm run build:website",
-    "build:erp": "npm --workspace erp run build",
-    "build:website": "npm --workspace website run build",
-    "start": "npm --workspace website run start",
-    "start:erp": "npm --workspace erp run start",
-    "start:website": "npm --workspace website run start"
-  },
-  "engines": {
-    "node": "20"
-  },
-  "devDependencies": {
-    "concurrently": "^10.0.6"
+    "dev:website": "npm run dev --workspace=website",
+    "dev:erp": "npm run dev --workspace=erp -- --port 3001",
+    "build:website": "npm run build --workspace=website",
+    "build:erp": "npm run build --workspace=erp",
+    "build": "npm run build --workspace=website && npm run build --workspace=erp"
   }
 }
