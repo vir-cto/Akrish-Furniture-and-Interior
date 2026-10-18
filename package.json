@@ -11,5 +11,8 @@
     "build:website": "npm run build --workspace=website",
     "build:erp": "npm run build --workspace=erp",
     "build": "npm run build --workspace=website && npm run build --workspace=erp"
+  },
+  "dependencies": {
+    "firebase": "^13.0.0"
   }
 }
