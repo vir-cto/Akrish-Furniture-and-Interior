@@ -18,25 +18,7 @@
 // export const auth = getAuth(app);
 // export const storage = getStorage(app);
 
-// import { initializeApp, getApps, getApp } from "firebase/app";
-// import { getFirestore } from "firebase/firestore";
-// import { getAuth } from "firebase/auth";
-// import { getStorage } from "firebase/storage";
 
-// const firebaseConfig = {
-//   apiKey: "AIzaSyAHcn8jZ5uK_x7clbQAOGAs2KIYdSMseFY",
-//   authDomain: "akrish-collective-erp.firebaseapp.com",
-//   projectId: "akrish-collective-erp",
-//   storageBucket: "akrish-collective-erp.firebasestorage.app",
-//   messagingSenderId: "309709340408",
-//   appId: "1:309709340408:web:f77b3c13a7738d1cb3850d",
-// };
-
-// const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-
-// export const db = getFirestore(app);
-// export const auth = getAuth(app);
-// export const storage = getStorage(app);
 
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
